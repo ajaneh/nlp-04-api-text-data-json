@@ -24,13 +24,15 @@ from pathlib import Path
 # API CONFIGURATION
 # ============================================================
 
-# TODO: In your custom app, change the URL to work with a different API that returns JSON data.
-API_URL: str = "https://jsonplaceholder.typicode.com/posts"
+
+API_URL: str = (
+    "https://api.tvmaze.com/shows/77778/episodes"  # Previous TODO was completed
+)
 
 # TODO: In your custom app, change the header user-agent value
 # to something that represents your app or project.
 HTTP_REQUEST_HEADERS: dict[str, str] = {
-    "User-Agent": "nlp-module-4-case/1.0",
+    "User-Agent": "api-request-institute/2.0",
     "Accept": "application/json",
 }
 
@@ -45,5 +47,5 @@ PROCESSED_PATH: Path = DATA_PATH / "processed"
 
 # TODO: In your custom app, change the output file names from case_
 # to something that represents YOUR custom project.
-RAW_JSON_PATH: Path = RAW_PATH / "case_raw.json"
-PROCESSED_CSV_PATH: Path = PROCESSED_PATH / "case_processed.csv"
+RAW_JSON_PATH: Path = RAW_PATH / "api_request_institute_raw.json"
+PROCESSED_CSV_PATH: Path = PROCESSED_PATH / "api_request_institute_processed.csv"

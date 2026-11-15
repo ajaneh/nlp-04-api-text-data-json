@@ -29,7 +29,7 @@ Notes:
 
 Run from root project folder with:
 
-  uv run python -m nlp.pipeline_api_json
+  uv run python -m custom_nlp.pipeline_api_json
 """
 
 # ============================================================
@@ -40,7 +40,7 @@ import logging
 
 from datafun_toolkit.logger import get_logger, log_header, log_path
 
-from nlp.config import (
+from custom_nlp.config import (
     API_URL,
     DATA_PATH,
     HTTP_REQUEST_HEADERS,
@@ -50,10 +50,10 @@ from nlp.config import (
     RAW_PATH,
     ROOT_PATH,
 )
-from nlp.stage01_extract import run_extract
-from nlp.stage02_validate import run_validate
-from nlp.stage03_transform import run_transform
-from nlp.stage04_load import run_load
+from custom_nlp.stage01_extract import run_extract
+from custom_nlp.stage02_validate import run_validate
+from custom_nlp.stage03_transform import run_transform
+from custom_nlp.stage04_load import run_load
 
 # ============================================================
 # Section 2. Configure Logging
@@ -108,7 +108,7 @@ def main() -> None:
     )
 
     LOG.info("========================")
-    LOG.info("Pipeline executed successfully!")
+    LOG.info("Heyert's Pipeline executed successfully!")
     LOG.info("========================")
 
 

@@ -2,7 +2,7 @@
 
 Alex Heyert, November 2026.
 
-Source: validated JSON object
+Source: validated JSON array from TVmaze API
 Sink: Polars DataFrame
 
 Purpose
@@ -11,14 +11,16 @@ Purpose
 
 Analytical Questions
 
-- Which fields are needed from the JSON data?
-- How can records be normalized into tabular form?
-- What derived fields would support analysis?
+- Q. Which fields are needed from the JSON data?
+- A. The fields needed are the episode name, summary, and rating.
+- Q.How can records be normalized into tabular form?
+- A. Each episode can be normalized into a row with consistent columns using polars
 
-Edit your Python file to:
-- extract the fields needed for your analysis,
-- normalize records into a consistent structure,
-- create any derived fields required.
+- Q. What derived fields would support analysis?
+- A. The name and summary lengths can be derived to support analysis. Rating is not a
+  constructed feature, but it could be valuable alongside the rest of the data,
+
+
 """
 
 # ============================================================
@@ -57,10 +59,12 @@ def run_transform(
     for record in json_data:
         records.append(
             {
-                "user_id": record["userId"],
-                "post_id": record["id"],
-                "title": record["title"],
-                "body": record["body"],
+                "episode_id": record["id"],
+                "name": record["name"],
+                "summary": record["summary"],
+                "rating": record.get("rating", {}).get(
+                    "average"
+                ),  # extract nested rating object as a number
             }
         )
 
@@ -69,8 +73,8 @@ def run_transform(
     # Derived fields
     df = df.with_columns(
         [
-            pl.col("title").str.len_chars().alias("title_length"),
-            pl.col("body").str.len_chars().alias("body_length"),
+            pl.col("name").str.len_chars().alias("name_length"),
+            pl.col("summary").str.len_chars().alias("summary_length"),
         ]
     )
 

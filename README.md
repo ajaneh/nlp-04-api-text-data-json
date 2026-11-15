@@ -17,100 +17,80 @@ Author: Alex Heyert
 
 Date: 2026 November
 
-TODO: Accurate Description
+This project is the fourth assignment in the Web Mining and Applied NLP course. It demonstrates a small Extract, Validate, Transform, and Load (EVTL) workflow for retrieving JSON data from a public API, checking the schema, normalizing records into a DataFrame, and saving the processed dataset for analysis.
 
-Fourth project in the Web Mining and Applied NLP course.
-
-This project introduces structured data acquisition
-using web APIs.
-
-The goal is to retrieve JSON data,
-validate its structure,
-transform it into an analysis-ready dataset,
-and persist the results.
-
-The project demonstrates an Extract, Validate,
-Transform, Load (EVTL) pipeline.
-
-The project is configured in
-[pyproject.toml](pyproject.toml).
+The project uses the `custom_nlp` package and is configured in [pyproject.toml](pyproject.toml).
 
 ## Data
 
-TODO:
-The pipeline preserves the raw JSON data
-and produces a structured CSV dataset.
+The pipeline pulls episode metadata from the TVMaze API at `https://api.tvmaze.com/shows/77778/episodes`. The raw API response is stored at:
+
+- `data/raw/api_request_institute_raw.json`
+
+The transformed, analysis-ready output is saved to:
+
+- `data/processed/api_request_institute_processed.csv`
+
+This preserves the original JSON payload while creating a cleaned tabular file with one row per episode.
 
 ## Approach
 
-The project uses a modular Python pipeline
-to acquire, validate, transform, and save API data.
+The project uses a modular Python pipeline to acquire, validate, transform, and save API data.
 
 The pipeline has four stages:
 
-- **Extract** - retrieve JSON data from an API.
-- **Validate** - verify the JSON structure and record types.
-- **Transform** - select fields and calculate derived text features.
+- **Extract** - retrieve JSON data from the API.
+- **Validate** - confirm the records have the expected structure and fields.
+- **Transform** - select the episode fields needed for analysis and add derived text-length metrics.
 - **Load** - save the processed data to a CSV file.
 
-TODO:
-The example uses Requests for HTTP acquisition
-and Polars for tabular data processing.
+The example uses the Python standard library and the `datafun_toolkit` logger for pipeline monitoring, with a Polars DataFrame in the transform stage.
 
 Explore these important project components:
 
 - [pyproject.toml](pyproject.toml) - project identity, dependencies, and tool configuration.
-- [src/nlp/pipeline_api_json.py](src/nlp/pipeline_api_json.py) - main EVTL pipeline orchestrator.
-- [src/nlp/config.py](src/nlp/config.py) - example API and path configuration.
-- [src/nlp/stage01_extract.py](src/nlp/stage01_extract.py) - retrieve API data.
-- [src/nlp/stage02_validate.py](src/nlp/stage02_validate.py) - validate JSON data.
-- [src/nlp/stage03_transform.py](src/nlp/stage03_transform.py) - transform records into a DataFrame.
-- [src/nlp/stage04_load.py](src/nlp/stage04_load.py) - save processed results.
+- [src/custom_nlp/pipeline_api_json.py](src/custom_nlp/pipeline_api_json.py) - main EVTL pipeline orchestrator.
+- [src/custom_nlp/config.py](src/custom_nlp/config.py) - API and file path configuration.
+- [src/custom_nlp/stage01_extract.py](src/custom_nlp/stage01_extract.py) - retrieve API data.
+- [src/custom_nlp/stage02_validate.py](src/custom_nlp/stage02_validate.py) - validate JSON data.
+- [src/custom_nlp/stage03_transform.py](src/custom_nlp/stage03_transform.py) - transform records into a DataFrame.
+- [src/custom_nlp/stage04_load.py](src/custom_nlp/stage04_load.py) - save processed results.
 - [tests/](tests/) - automated tests.
 - [.github/workflows/](.github/workflows/) - automated testing and documentation deployment.
 - [docs/](docs/) - project documentation.
 - [zensical.toml](zensical.toml) - documentation configuration.
 
-The goal is to understand how data moves
-through a reproducible pipeline
-with explicit stages and intermediate results.
+The goal is to understand how data moves through a reproducible pipeline with explicit stages and intermediate artifacts.
 
 ## Run the Project
 
-Follow the [Professional Python Workflow Guide](https://denisecase.github.io/pro-analytics-02/)
-to set up your machine and project environment.
+Follow the [Professional Python Workflow Guide](https://denisecase.github.io/pro-analytics-02/) to set up your machine and project environment.
 
 From a VS Code terminal in the project root:
 
 ```shell
-uv run python -m nlp.pipeline_api_json
+uv run python -m custom_nlp.pipeline_api_json
 ```
 
 ## Results
 
-The pipeline retrieves JSON records,
-checks their structure,
-and transforms the records into a tabular dataset.
-
-The Transform stage calculates derived fields,
-including title and body text lengths.
+The pipeline retrieves episode records from the TVMaze endpoint, validates the structure, and transforms them into a tabular dataset. The transformation step keeps the key episode fields (`episode_id`, `name`, `summary`, and `rating`) and derives text lengths such as `name_length` and `summary_length` to support analysis.
 
 Successful execution produces:
 
 ```shell
 ========================
-Pipeline executed successfully!
+Heyert's Pipeline executed successfully!
 ========================
 ```
 
 The following files are created:
 
 - `project.log` - pipeline execution log.
-- `data/raw/case_raw.json` - original API response.
-- `data/processed/case_processed.csv` - transformed dataset.
+- `data/raw/api_request_institute_raw.json` - original API response.
+- `data/processed/api_request_institute_processed.csv` - transformed dataset.
 
-These artifacts provide evidence of successful
-data acquisition, validation, transformation, and persistence.
+These artifacts provide evidence of successful data acquisition, validation, transformation, and persistence.
 
 ## Verification
 
