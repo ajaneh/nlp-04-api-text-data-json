@@ -2,7 +2,6 @@
 
 Alex Heyert, November 2026.
 
-NO EDITS REQUIRED IN THIS FILE (if paths have not changed.)
 
 Purpose
 
@@ -11,16 +10,9 @@ Purpose
   Illustrate how to parse JSON to get the desired information.
 
 
-Analytical Questions
-
-- How can we extract JSON data from an API and save it to a file?
-- How can we validate the structure and content of the JSON data?
-- How can we transform the validated JSON data into a structured format (like a DataFrame)?
-- How can we load the transformed data into a sink (like a CSV file)?
-
 
 Notes:
-- This file should not require modification.
+- This file was modified to include a visualization stage.
 - This is the main pipeline script that orchestrates the entire EVTL process.
 - It assumes a standard ETL pipeline enhanced with a VALIDATE stage, making it an EVTL pipeline.
 - The stages are modularized into separate files for clarity and maintainability.
@@ -54,6 +46,7 @@ from custom_nlp.stage01_extract import run_extract
 from custom_nlp.stage02_validate import run_validate
 from custom_nlp.stage03_transform import run_transform
 from custom_nlp.stage04_load import run_load
+from custom_nlp.stage05_visualize import visualize_fillory_mentions
 
 # ============================================================
 # Section 2. Configure Logging
@@ -106,6 +99,9 @@ def main() -> None:
         processed_csv_path=PROCESSED_CSV_PATH,
         LOG=LOG,
     )
+
+    # VISUALIZE
+    visualize_fillory_mentions(processed_csv_path=PROCESSED_CSV_PATH, LOG=LOG)
 
     LOG.info("========================")
     LOG.info("Heyert's Pipeline executed successfully!")

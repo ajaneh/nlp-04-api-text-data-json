@@ -12,13 +12,12 @@ Purpose
 Analytical Questions
 
 - Q. Which fields are needed from the JSON data?
-- A. The fields needed are the episode name, summary, and rating.
+- A. The fields needed are (episode) summary, season, number (of episode in season), id, name (episode title), and rating.
 - Q.How can records be normalized into tabular form?
 - A. Each episode can be normalized into a row with consistent columns using polars
 
 - Q. What derived fields would support analysis?
-- A. The name and summary lengths can be derived to support analysis. Rating is not a
-  constructed feature, but it could be valuable alongside the rest of the data,
+- A. Occurrences of the word "Fillory" in the summary can be counted to support analysis of importance throughout the series.
 
 
 """
@@ -27,7 +26,9 @@ Analytical Questions
 # Section 1. Setup and Imports
 # ============================================================
 
+from html import unescape
 import logging
+import re
 from typing import Any
 
 import polars as pl
@@ -57,11 +58,15 @@ def run_transform(
     records: list[dict[str, Any]] = []
 
     for record in json_data:
+        # Pull summary to format it before adding it to the record.
+        summary = record["summary"]
         records.append(
             {
-                "episode_id": record["id"],
-                "name": record["name"],
-                "summary": record["summary"],
+                "id": record["id"],
+                "season": record["season"],
+                "episode_number": record["number"],
+                "title": record["name"],
+                "summary": unescape(re.sub(r"<[^>]+>", " ", summary)).strip(),
                 "rating": record.get("rating", {}).get(
                     "average"
                 ),  # extract nested rating object as a number
@@ -73,8 +78,25 @@ def run_transform(
     # Derived fields
     df = df.with_columns(
         [
-            pl.col("name").str.len_chars().alias("name_length"),
-            pl.col("summary").str.len_chars().alias("summary_length"),
+            # Add season and episode number as a single column. IE S2E16
+            (
+                pl.lit("S")
+                + pl.col("season").cast(pl.String)
+                + pl.lit("E")
+                + pl.col("episode_number").cast(pl.String)
+            ).alias("season_episode"),
+            # Add number of mentions of the word "fillory" (case-insensitive)
+            pl.col("summary")
+            .str.count_matches(r"(?i)\bfillory\b")
+            .alias("fillory_mentions"),
+            # Add number of "Quentin" mentions (case-insensitive)
+            pl.col("summary")
+            .str.count_matches(r"(?i)\bquentin\b")
+            .alias("quentin_mentions"),
+            # Add number of "Margo" mentions (case-insensitive)
+            pl.col("summary")
+            .str.count_matches(r"(?i)\bmargo\b")
+            .alias("margo_mentions"),
         ]
     )
 

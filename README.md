@@ -1,8 +1,8 @@
-# nlp-04-api-text-data
+# nlp-04-api-text-data-json
 
 [![Python 3.14](https://img.shields.io/badge/python-3.14%2B-blue?logo=python)](pyproject.toml)
-[![CI](https://github.com/denisecase/nlp-04-api-text-data/actions/workflows/ci-python-zensical.yml/badge.svg)](https://github.com/denisecase/nlp-04-api-text-data/actions/workflows/ci-python-zensical.yml)
-[![Documentation](https://img.shields.io/badge/docs-site-blue?logo=github)](https://denisecase.github.io/nlp-04-api-text-data/)
+[![CI](https://github.com/ajaneh/nlp-04-api-text-data-json/actions/workflows/ci-python-zensical.yml/badge.svg)](https://github.com/ajaneh/nlp-04-api-text-data-json/actions/workflows/ci-python-zensical.yml)
+[![Documentation](https://img.shields.io/badge/docs-site-blue?logo=github)](https://ajaneh.github.io/nlp-04-api-text-data-json/)
 
 [![uv managed](https://img.shields.io/badge/uv-managed-DE5FE9)](https://docs.astral.sh/uv/)
 [![ty type checked](https://img.shields.io/badge/ty-type_checked-2F80ED)](https://docs.astral.sh/ty/)
@@ -17,32 +17,37 @@ Author: Alex Heyert
 
 Date: 2026 November
 
-This project is the fourth assignment in the Web Mining and Applied NLP course. It demonstrates a small Extract, Validate, Transform, and Load (EVTL) workflow for retrieving JSON data from a public API, checking the schema, normalizing records into a DataFrame, and saving the processed dataset for analysis.
+This project is the fourth assignment in the Web Mining and Applied NLP course. It demonstrates a small Extract, Validate, Transform, and Load (EVTL) workflow for retrieving JSON data from a public API, checking the response structure, normalizing records into a DataFrame, and saving the processed dataset for analysis.
 
 The project uses the `custom_nlp` package and is configured in [pyproject.toml](pyproject.toml).
 
 ## Data
 
-The pipeline pulls episode metadata from the TVMaze API at `https://api.tvmaze.com/shows/77778/episodes`. The raw API response is stored at:
+The pipeline pulls episode metadata for [The Magicians](https://www.tvmaze.com/shows/3083/the-magicians) from the [TVmaze episode API](https://api.tvmaze.com/shows/3083/episodes). The raw API response is stored at:
 
-- `data/raw/api_request_institute_raw.json`
+- `data/raw/magicians_request_raw.json`
 
 The transformed, analysis-ready output is saved to:
 
-- `data/processed/api_request_institute_processed.csv`
+- `data/processed/magicians_request_processed.csv`
 
-This preserves the original JSON payload while creating a cleaned tabular file with one row per episode.
+The final chart is saved to:
+
+- `data/processed/character_mentions_distribution.png`
+
+The raw response preserves the source JSON while the processed CSV contains one cleaned row per episode.
 
 ## Approach
 
 The project uses a modular Python pipeline to acquire, validate, transform, and save API data.
 
-The pipeline has four stages:
+The pipeline has four EVTL stages followed by visualization:
 
 - **Extract** - retrieve JSON data from the API.
-- **Validate** - confirm the records have the expected structure and fields.
-- **Transform** - select the episode fields needed for analysis and add derived text-length metrics.
+- **Validate** - confirm the response is a non-empty list and every item is a dictionary.
+- **Transform** - select episode fields, clean summary HTML, and count Fillory, Quentin, and Margo mentions.
 - **Load** - save the processed data to a CSV file.
+- **Visualize** - plot episode-summary mention counts for Fillory, Quentin, and Margo.
 
 The example uses the Python standard library and the `datafun_toolkit` logger for pipeline monitoring, with a Polars DataFrame in the transform stage.
 
@@ -72,9 +77,16 @@ From a VS Code terminal in the project root:
 uv run python -m custom_nlp.pipeline_api_json
 ```
 
+The pipeline opens the saved chart in a plot window; close the window to
+finish the run.
+
 ## Results
 
-The pipeline retrieves episode records from the TVMaze endpoint, validates the structure, and transforms them into a tabular dataset. The transformation step keeps the key episode fields (`episode_id`, `name`, `summary`, and `rating`) and derives text lengths such as `name_length` and `summary_length` to support analysis.
+The pipeline retrieves 65 episode records from the TVmaze endpoint and creates
+one processed row per episode. It selects the episode ID, season, episode
+number, title, summary, and rating, then adds a season/episode label and
+case-insensitive whole-word counts for Fillory, Quentin, and Margo in each
+summary. The combined chart compares these per-episode counts.
 
 Successful execution produces:
 
@@ -87,8 +99,9 @@ Heyert's Pipeline executed successfully!
 The following files are created:
 
 - `project.log` - pipeline execution log.
-- `data/raw/api_request_institute_raw.json` - original API response.
-- `data/processed/api_request_institute_processed.csv` - transformed dataset.
+- `data/raw/magicians_request_raw.json` - original API response.
+- `data/processed/magicians_request_processed.csv` - transformed dataset.
+- `data/processed/character_mentions_distribution.png` - final chart.
 
 These artifacts provide evidence of successful data acquisition, validation, transformation, and persistence.
 
@@ -116,8 +129,8 @@ to check project files and publish the docs.
 
 GitHub Actions include:
 
-- [CI: Python and Documentation Checks](https://github.com/denisecase/nlp-04-api-text-data/actions/workflows/ci-python-zensical.yml)
-- [CD: Documentation Deployment](https://github.com/denisecase/nlp-04-api-text-data/actions/workflows/deploy-zensical.yml)
+- [CI: Python and Documentation Checks](https://github.com/ajaneh/nlp-04-api-text-data-json/actions/workflows/ci-python-zensical.yml)
+- [CD: Documentation Deployment](https://github.com/ajaneh/nlp-04-api-text-data-json/actions/workflows/deploy-zensical.yml)
 
 ## Developer Reference
 
@@ -136,6 +149,7 @@ uv self update
 uv python pin 3.14
 uv python install
 uv lock --upgrade
+uv add matplotlib
 uv sync
 uv audit
 ```
@@ -202,7 +216,9 @@ testing, documentation, and code quality.
 
 ## Links
 
-- [Hosted Documentation](https://denisecase.github.io/nlp-04-api-text-data/)
+- [Hosted Documentation](https://ajaneh.github.io/nlp-04-api-text-data-json/)
+- [Project Report](docs/index.md)
+- [GitHub Repository](https://github.com/ajaneh/nlp-04-api-text-data-json)
 - [Professional Python Workflow Guide](https://denisecase.github.io/pro-analytics-02/)
 - [Citation](CITATION.cff)
 - [License](LICENSE)

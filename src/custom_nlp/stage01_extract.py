@@ -2,7 +2,7 @@
 
 Alex Heyert, November 2026.
 
-NO EDITS REQUIRED IN THIS FILE (if paths have not changed.)
+NO EDITS REQUIRED IN THIS FILE
 
 Source: API
 Sink: raw JSON object + raw JSON file

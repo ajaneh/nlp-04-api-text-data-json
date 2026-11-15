@@ -11,15 +11,15 @@ Purpose
 
 Analytical Questions
 
-- What is the top-level structure of the JSON data?
-- What keys are present in each record?
-- What data types are associated with each field?
-- Does the data meet expectations for transformation?
+- Q. What is the top-level structure of the JSON data?
+- A. The top-level structure is a list of records.
+- Q. What keys are present in each record?
+- A. Each record contains the keys: id, url, name, summary, and image. #TODO use actual keys from the API response
+- Q. What data types are associated with each field?
+- A. The id field is an integer, while the url, name, summary, and image fields are strings. #TODO use actual data types from the API response
+- Q. Does the data meet expectations for transformation?
+- A. Yes, the data meets expectations for transformation.
 
-Edit your Python file to:
-- inspect the JSON structure for your API,
-- validate required keys and types,
-- confirm the data is usable for your analysis.
 """
 
 # ============================================================

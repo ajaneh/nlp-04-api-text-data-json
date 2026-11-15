@@ -26,13 +26,13 @@ from pathlib import Path
 
 
 API_URL: str = (
-    "https://api.tvmaze.com/shows/77778/episodes"  # Previous TODO was completed
+    "https://api.tvmaze.com/shows/3083/episodes"  # Update to look at the magicians
 )
 
 # TODO: In your custom app, change the header user-agent value
 # to something that represents your app or project.
 HTTP_REQUEST_HEADERS: dict[str, str] = {
-    "User-Agent": "api-request-institute/2.0",
+    "User-Agent": "api-request-magicians/1.0",
     "Accept": "application/json",
 }
 
@@ -47,5 +47,5 @@ PROCESSED_PATH: Path = DATA_PATH / "processed"
 
 # TODO: In your custom app, change the output file names from case_
 # to something that represents YOUR custom project.
-RAW_JSON_PATH: Path = RAW_PATH / "api_request_institute_raw.json"
-PROCESSED_CSV_PATH: Path = PROCESSED_PATH / "api_request_institute_processed.csv"
+RAW_JSON_PATH: Path = RAW_PATH / "magicians_request_raw.json"
+PROCESSED_CSV_PATH: Path = PROCESSED_PATH / "magicians_request_processed.csv"

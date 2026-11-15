@@ -1,99 +1,88 @@
-# Web Mining and Applied NLP Project Report
+# Module 4: The Magicians Episode Summary Mentions
 
-Web Mining and Applied NLP | Project 04 | Example Report
+Project 04
+**Web Mining & Applied NLP | Alex Heyert 2026 November**
 
-## Overview
+## Project question
 
-This project introduces structured text data acquisition
-using web APIs.
+This project adapts the example EVTL pipeline to TVmaze episode data for
+[*The Magicians*](https://www.tvmaze.com/shows/3083/the-magicians). It asks:
 
-The objective is to retrieve JSON data,
-validate its structure,
-transform records into a tabular representation,
-and persist the results for analysis.
+> How often do the episode summaries mention Fillory, Quentin, and Margo, and how do those mention counts vary across episodes?
 
-The project demonstrates a modular
-Extract, Validate, Transform, Load (EVTL) pipeline
-with explicit inputs and outputs.
+The original project example retrieves JSONPlaceholder posts. This custom
+pipeline instead retrieves episode records from TVmaze and uses Polars to
+prepare an episode-level dataset.
 
-## Tools and Methods
+## Data source and JSON structure
 
-The project uses:
+The source is TVmaze's
+[episode API for show 3083](https://api.tvmaze.com/shows/3083/episodes).
+TVmaze identifies show 3083 as [*The Magicians*](https://www.tvmaze.com/shows/3083/the-magicians).
+The saved response contains 65 episode records: 13 episodes in each of five
+seasons. Each record is a JSON object with fields including `id` (integer),
+`name` (string), `season` and `number` (integers), `summary` (HTML-formatted
+string), and nested `rating`, `image`, and `_links` objects.
 
-- Python for pipeline orchestration and processing.
-- Requests for retrieving JSON data from a web API.
-- JSON for representing structured source records.
-- Validation checks for confirming expected data structures.
-- Polars for tabular transformation and derived features.
-- CSV for persistent output.
-- Logging for execution records.
-- Ruff, ty, and pytest for code verification.
-- Zensical and GitHub Pages for published documentation.
+The pipeline selects these source values:
 
-The example retrieves post records
-from the JSONPlaceholder demonstration API.
+| Source field | Output field | Use |
+| --- | --- | --- |
+| `id` | `id` | Episode identifier |
+| `season` | `season` | Season number |
+| `number` | `episode_number` | Episode number within the season |
+| `name` | `title` | Episode title |
+| `summary` | `summary` | Text used for keyword counts |
+| `rating.average` | `rating` | TVmaze's episode rating, when available |
 
-The pipeline implements four stages:
+The [saved raw JSON](https://github.com/ajaneh/nlp-04-api-text-data-json/blob/main/data/raw/magicians_request_raw.json)
+preserves the API response.
 
-- **Extract** - retrieve JSON records and preserve the raw response.
-- **Validate** - verify the structure and types of the retrieved records.
-- **Transform** - select fields and calculate text lengths.
-- **Load** - save the transformed data to a CSV file.
+## Validation and transformation
 
-Each stage is implemented as a separate Python module
-with explicit inputs and outputs.
+The Validate stage requires the response to be a non-empty list and every
+record to be a dictionary. It does not currently enforce required record keys
+or field types. The Transform stage expects `id`, `season`, `number`, `name`,
+and `summary`; it also reads `rating.average` when available. A changed or
+incomplete API response could therefore pass the current validation checks
+and still fail during transformation.
 
-## Verification
+The Transform stage creates one row per episode in a Polars DataFrame. It
+removes HTML tags from each summary and trims surrounding whitespace, then
+adds:
 
-A successful execution displays:
+- `season_episode`, a readable label such as `S2E13`.
+- `fillory_mentions`, `quentin_mentions`, and `margo_mentions`, the number of
+  case-insensitive, whole-word matches for each name in that episode's
+  cleaned summary.
 
-    Pipeline executed successfully!
+The Load stage writes the table to
+[`data/processed/magicians_request_processed.csv`](https://github.com/ajaneh/nlp-04-api-text-data-json/blob/main/data/processed/magicians_request_processed.csv).
 
-The pipeline records execution details in a project log.
+## Results and visual
 
-The following artifacts are created:
+The processed CSV has 65 rows, one per episode. Across those summaries,
+Fillory appears 8 times, Quentin 42 times, and Margo 26 times. Quentin appears
+in 38 episode summaries and reaches 3 mentions in one episode; Fillory and
+Margo each appear at most once in any one summary. Comparing the side by side chart shows that as the show progresses and Margo becomes an integral part of Fillory, her name almost seems to replace mentions of Fillory.
 
-- `data/raw/case_raw.json` - original API response.
-- `data/processed/case_processed.csv` - transformed dataset.
+![Character mentions across The Magicians episodes](images/character_mentions_distribution.png)
 
-These results demonstrate that the pipeline can
-acquire, validate, transform, and persist API data.
+## Interpretation and limitations
 
-Automated tests provide additional verification
-of the pipeline's expected behavior.
+The saved results show that Quentin is the most frequently mentioned of these
+three names in the episode summaries. Fillory occurs in 8 of 65 summaries,
+including three mentions in each of Seasons 1 and 2, one in Season 3, none in
+Season 4, and one in Season 5.
 
-## Interpretation
+The dataset/the show is known for it's short pithy summaries. Episode ratings are saved in the final CSV for potential future analysis.
 
-Web APIs provide structured access
-to externally maintained data.
+The selected fields are the “(episode) summary, season, number (of episode in season), id, name (episode title), and rating”.
 
-Successful acquisition does not guarantee
-that the data meets analytical requirements.
-
-Validation establishes whether the retrieved
-records have an expected structure,
-while transformation produces a consistent
-representation for subsequent analysis.
-
-The EVTL architecture separates responsibilities,
-making pipeline behavior easier to inspect,
-test, and maintain.
-
-## Documentation Index
-
-- **Home** - this landing page
-- [**Project Instructions**](project-instructions.md)
-- [**Glossary**](glossary.md)
-
-## Project Links
-
-- [GitHub Repository](https://github.com/denisecase/nlp-04-api-text-data)
-- [Example Pipeline](https://github.com/denisecase/nlp-04-api-text-data/blob/main/src/nlp/pipeline_api_json.py)
-- [Example Configuration](https://github.com/denisecase/nlp-04-api-text-data/blob/main/src/nlp/config.py)
-- [Pipeline Stages](https://github.com/denisecase/nlp-04-api-text-data/tree/main/src/nlp)
-
-## Project Resources
-
-- [Project Instructions](project-instructions.md)
+- [Project repository](https://github.com/ajaneh/nlp-04-api-text-data-json)
+- [Custom pipeline source](https://github.com/ajaneh/nlp-04-api-text-data-json/blob/main/src/custom_nlp/pipeline_api_json.py)
+- [Custom stages](https://github.com/ajaneh/nlp-04-api-text-data-json/tree/main/src/custom_nlp)
+- [Automated tests](https://github.com/ajaneh/nlp-04-api-text-data-json/tree/main/tests)
+- [Project instructions](project-instructions.md)
+- [Glossary](glossary.md)
 - [Professional Python Guide](https://denisecase.github.io/pro-analytics-02/)
-- [Professional Python Project Explainer](https://pup-pack.github.io/professional-python-project-explainer/)
